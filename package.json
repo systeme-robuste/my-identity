@@ -1,0 +1,49 @@
+{
+  "name": "my-identity",
+  "version": "0.1.0",
+  "private": true,
+  "description": "My Identity — The professional no-code platform built for the next decade.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "dev": "pnpm -r --parallel --filter \"./apps/*\" dev",
+    "dev:api": "pnpm --filter @my-identity/api dev",
+    "dev:renderer": "pnpm --filter @my-identity/renderer dev",
+    "dev:dashboard": "pnpm --filter @my-identity/dashboard dev",
+    "dev:marketing": "pnpm --filter @my-identity/marketing dev",
+    "dev:docs": "pnpm --filter @my-identity/docs dev",
+    "build": "pnpm -r --filter \"./apps/*\" build",
+    "build:api": "pnpm --filter @my-identity/api build",
+    "build:renderer": "pnpm --filter @my-identity/renderer build",
+    "build:dashboard": "pnpm --filter @my-identity/dashboard build",
+    "build:marketing": "pnpm --filter @my-identity/marketing build",
+    "build:docs": "pnpm --filter @my-identity/docs build",
+    "test": "pnpm -r --filter \"./apps/*\" --filter \"./packages/*\" test",
+    "test:unit": "pnpm -r --if-present test:unit",
+    "test:e2e": "pnpm --if-present test:e2e",
+    "lint": "pnpm -r --if-present lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml,css,html}\" --ignore-path .gitignore",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml,css,html}\" --ignore-path .gitignore",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "db:generate": "pnpm --filter @my-identity/db generate",
+    "db:migrate": "pnpm --filter @my-identity/db migrate",
+    "db:push": "pnpm --filter @my-identity/db push",
+    "db:studio": "pnpm --filter @my-identity/db studio",
+    "db:seed": "pnpm --filter @my-identity/db seed",
+    "deploy:api": "pnpm --filter @my-identity/api deploy",
+    "deploy:renderer": "pnpm --filter @my-identity/renderer deploy",
+    "deploy:dashboard": "pnpm --filter @my-identity/dashboard deploy",
+    "clean": "pnpm -r --if-present clean && rm -rf node_modules .pnpm-store"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.0",
+    "@types/node": "^20.12.7",
+    "prettier": "^3.3.0",
+    "typescript": "^5.5.0"
+  }
+}

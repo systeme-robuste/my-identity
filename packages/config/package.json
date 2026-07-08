@@ -1,0 +1,15 @@
+{
+  "name": "@my-identity/config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./tsconfig/base.json": "./tsconfig/base.json",
+    "./tsconfig/react.json": "./tsconfig/react.json",
+    "./tsconfig/node.json": "./tsconfig/node.json",
+    "./eslint": "./eslint/index.js",
+    "./prettier": "./prettier/index.js",
+    "./tailwind": "./tailwind/preset.js"
+  },
+  "files": ["tsconfig", "eslint", "prettier", "tailwind"]
+}

@@ -1,0 +1,34 @@
+name = "my-identity-renderer"
+main = "src/index.ts"
+compatibility_date = "2024-06-20"
+compatibility_flags = ["nodejs_compat"]
+
+# --- KV: rendered page cache (read-through, stale-while-revalidate) ---
+[[kv_namespaces]]
+binding = "RENDER_CACHE"
+id = "00000000000000000000000000000000"
+
+# --- D1: cache index (last-rendered timestamps for SWR) ---
+[[d1_databases]]
+binding = "CACHE_DB"
+database_name = "my-identity-render-cache"
+database_id = "00000000000000000000000000000000"
+
+# --- Vars ---
+[vars]
+ENVIRONMENT = "development"
+APP_NAME = "My Identity Renderer"
+APP_VERSION = "0.1.0"
+API_BASE_URL = "http://localhost:8787"
+CACHE_TTL_SECONDS = "300"
+CACHE_STALE_SECONDS = "86400"
+
+# --- Production overrides (deployed via deploy-renderer.yml) ---
+[env.production]
+name = "my-identity-renderer"
+routes = [
+  { pattern = "*.myidentity.app/*", custom_domain = true }
+]
+[env.production.vars]
+ENVIRONMENT = "production"
+API_BASE_URL = "https://api.myidentity.app"

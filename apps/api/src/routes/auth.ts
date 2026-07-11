@@ -22,6 +22,7 @@ import type { Env } from "../types/env.d.ts";
 import { ApiError } from "../lib/errors.ts";
 import { log } from "../lib/logger.ts";
 import { newSessionId } from "../lib/id.ts";
+import { ulid } from "@my-identity/shared/utils/id";
 import { sendEmail } from "../lib/email.ts";
 import { verifyTurnstileToken } from "../lib/turnstile.ts";
 import { getDb } from "../lib/db.ts";
@@ -127,7 +128,7 @@ authRoutes.post("/signup", zValidator("json", signupSchema), async (c) => {
 
   const db = getDb(c.env);
   const passwordHash = await hashPassword(input.password);
-  const userId = crypto.randomUUID(); // ULID would be better; using crypto.randomUUID for compat with the schema
+  const userId = ulid(); // ULID for k-sortable, 26 chars
   const now = Date.now();
 
   try {

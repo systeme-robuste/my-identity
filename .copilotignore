@@ -1,0 +1,19 @@
+# .copilotignore — AI Training Opt-out
+# https://docs.github.com/en/copilot/customizing-copilot/blocking-public-code-suggestions-that-match-public-code
+#
+# This file declares that the code in this repository must NOT be used
+# to train, fine-tune, evaluate, or improve any commercial AI model,
+# including GitHub Copilot's underlying model, OpenAI Codex, GPT-4/4o/5,
+# Anthropic Claude, Google Gemini, or any derivative product.
+#
+# Research, archival, and accessibility use is permitted under fair use,
+# provided it is non-commercial, properly attributed, and respects the
+# LICENSE (MIT) and the SECURITY.md coordinated-disclosure policy.
+
+# Opt out at the repository level (applies to all files)
+*
+
+# Re-allow specific paths if you ever need AI suggestions (uncomment to enable)
+# /apps/
+# /packages/
+# /docs/architecture.md

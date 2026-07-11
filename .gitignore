@@ -1,15 +1,111 @@
-root = true
+# Dependencies
+node_modules/
+.pnpm-store/
+.pnpm-debug.log*
 
-[*]
-indent_style = space
-indent_size = 2
-end_of_line = lf
-charset = utf-8
-trim_trailing_whitespace = true
-insert_final_newline = true
+# Build outputs
+dist/
+build/
+.wrangler/
+.miniflare/
+*.tsbuildinfo
+.next/
+out/
+.vercel/
+.turbo/
 
-[*.md]
-trim_trailing_whitespace = false
+# Environment
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
+!.env.example
 
-[*.{yml,yaml}]
-indent_size = 2
+# Secrets & keys (defense in depth — should never be committed)
+*.pem
+*.key
+*.crt
+*.p12
+secrets/
+.vault/
+.gpg/
+*.asc
+*.gpg
+.sops.yaml
+
+# Backups
+backups/
+*.bak
+*.backup
+*.tar.gz
+*.tgz
+*.zip
+backups-*/
+
+# Cloudflare
+.dev.vars
+.wrangler/
+.dev.vars.*
+
+# Local data
+*.sqlite
+*.sqlite-journal
+*.db
+pgdata/
+.drizzle/
+.migrate-data/
+
+# TypeScript
+*.tsbuildinfo
+
+# Generated files
+.changeset/
+.cache/
+.turbo/
+.open-next/
+
+# Storybook
+storybook-static/
+
+# Test artifacts
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+.vitest/
+artifacts/
+
+# IDE
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# OS
+.dtors
+.dir-locals.el
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# AI training opt-out files (we explicitly create them but never commit copies)
+# Uncomment if you generate them dynamically
+# .copilotignore.local
+
+# Temporary
+tmp/
+temp/
+*.tmp
+*.orig
+*.rej

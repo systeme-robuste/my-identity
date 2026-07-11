@@ -1,0 +1,21 @@
+# security.txt — RFC 9116
+# https://www.rfc-editor.org/rfc/rfc9116
+# Tells security researchers how to disclose vulnerabilities.
+
+Contact: mailto:security@myidentity.app
+Contact: https://myidentity.app/security
+Expires: 2027-12-31T23:59:59z
+Preferred-Languages: en, fr
+Canonical: https://myidentity.app/.well-known/security.txt
+
+# Acknowledgments page
+Acknowledgments: https://myidentity.app/security/hall-of-fame
+
+# Policy (full disclosure timeline)
+Policy: https://github.com/systeme-robuste/my-identity/blob/main/SECURITY.md
+
+# Encryption (PGP for sensitive reports)
+Encryption: https://myidentity.app/.well-known/pgp-key.asc
+
+# Hiring (security roles)
+Hiring: https://myidentity.app/jobs#security

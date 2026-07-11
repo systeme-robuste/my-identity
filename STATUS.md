@@ -14,7 +14,7 @@
 | Docs (Astro) | ✅ | Architecture, API, DB, deployment, security, prd |
 | DB schema (Drizzle ORM) | ✅ | 22 tables, 543 lignes migration SQL |
 | Site de référence publié | ✅ | <https://site.zapia.com/7bog68jb> |
-| Repo GitHub créé | ✅ | <https://github.com/systeme-robuste/my-identity> (privé) |
+| Repo GitHub créé | ✅ | <https://github.com/systeme-robuste/my-identity> (public) |
 | Push complet sur GitHub | ✅ | 220 fichiers en ligne |
 | README + LICENSE | ✅ | MIT, copyright Califi Mwarabu |
 | Roadmap M1+M2+M3 | ✅ | 3 phases, ~150 deliverables |
@@ -26,29 +26,71 @@
 |---|---|---|
 | Tests unitaires (logger, cache, rate-limit, auth, id, errors) | ✅ | 7 fichiers `*.test.ts`, vitest 1.6+, `pnpm --filter @my-identity/api test` |
 | Seed DB (Drizzle) | ✅ | `packages/db/seed.ts` + `tsx`, idempotent, 1 site démo + 1 user démo |
-| Postgres + tsx ajoutés à `packages/db` | ✅ | Pour exécution locale du seed |
-| `media.size_bytes` en `bigint` (Drizzle) | ✅ | Plus de `text`, aligné PG `bigint` |
-| `docs/performance.md` | ✅ | Lighthouse / CWV / bundle budgets / edge / DB / SLO |
-| CI = 1 PUT Contents API par appel | ✅ | Pattern documenté dans RULES.md (subagent) |
+| `docs/performance.md` | ✅ | Lighthouse, Core Web Vitals, bundle budgets, edge budgets, observabilité, SLO |
+| Schema `media.size_bytes` → `bigint` | ✅ | Aligné PG `bigint`, plus de cast manuel |
+| `bootstrap-cloudflare.sh` preflight env-var check | ✅ | Sortie en `exit 2` si `CLOUDFLARE_*` manquants |
+| M0 roadmap cases cochées | ✅ | `roadmap/phase-1-mvp.md` à jour |
 
-**Métriques HEAD :** 231 fichiers source, 7 fichiers de tests, 1 seed,
-4 docs M1 (`performance.md` + MAJ `STATUS`/`CHANGELOG`/`roadmap`).
+## 🟢 M1-S2 — Schema alignment + security : **100% COMPLET** (2026-07-11)
 
-## 🟡 Prochaines étapes (M1 — Build & Deploy)
+| Élément | Statut | Détail |
+|---|---|---|
+| `SECURITY.md` | ✅ | Coordinated disclosure, 24h ack, 30d fix, PGP, RGPD/DSA refs |
+| `CODEOWNERS` | ✅ | Auto-assign Y sur security/db/deploy/billing/auth |
+| `public/.well-known/security.txt` | ✅ | RFC 9116 |
+| `public/.well-known/ai.txt` | ✅ | Opt-out AI training crawlers (GPTBot, ClaudeBot, etc.) |
+| `public/.well-known/humans.txt` | ✅ | Project credits |
+| `.github/ISSUE_TEMPLATE/security_report.md` | ✅ | Private disclosure template |
+| `.github/ISSUE_TEMPLATE/data_rights_request.md` | ✅ | RGPD Art. 15-20 (accès, rectification, effacement, portabilité, opposition) |
+| `docs/SECURITY_CHECKLIST.md` | ✅ | 50+ items, 7 catégories, signature obligatoire avant deploy |
+| `docs/BRAND.md` | ✅ | Design tokens, voice & tone, a11y, logo, do/don'ts |
+| `CHANGELOG.md` (0.1.2) | ✅ | M1-S2 entrées documentées |
+| `STATUS.md` (ce fichier) | ✅ | À jour thread 57 |
+| `scripts/dev.sh` enrichi | ✅ | Vérification CLI + détection placeholders `.env` |
+| `.gitignore` enrichi | ✅ | Secrets, backups, copilotignore |
+| `.copilotignore` créé | ✅ | Opt-out AI training sur le repo |
+| Schema Drizzle ↔ migration SQL alignés | ✅ | Pas de drift, FKs matchent |
 
-1. **Restaurer les workflows** dans `.github/workflows/` (subagent `restore-workflows` en cours, thread `611381ed-3902-4df9-ae98-a0228cb2028f`).
-2. **Créer le compte Cloudflare** (org NEXUS) + Workers, D1, R2, KV.
-3. **Provisionner Neon Postgres** (free tier EU) pour la DB primaire.
-4. **Setup Resend** + vérifier domaine `myidentity.app` (DNS).
-5. **Setup Stripe** + 3 produits : Free, Pro ($9/yr ou $11/mo), Business ($49/yr ou $59/mo).
-6. **Setup Mistral AI** (clé API pour les fonctions IA : génération de texte, FAQ, descriptions).
-7. **Setup Sentry** pour error tracking.
-8. **Setup Cloudflare Turnstile** pour anti-bot.
-9. **Créer 8 templates de site** (Aura, Helix, Lumen, Scholar, Codex, Vitrine, Quill, Cercle).
-10. **Build + deploy l'API** sur Cloudflare Workers.
-11. **Build + deploy le Renderer** sur Cloudflare Workers.
-12. **Build + deploy le Dashboard** sur Cloudflare Pages.
-13. **Lier les custom domains** : `myidentity.app`, `api.myidentity.app`, `renderer.myidentity.app`, `studio.myidentity.app`.
+## 🟡 M1-S3 — Cloudflare / Neon / Sentry / Stripe : **EN COURS**
+
+| Élément | Statut | Détail |
+|---|---|---|
+| Cloudflare org NEXUS | 🟡 | Provisioning en attente (compte + Workers + D1 + R2 + KV) |
+| Neon Postgres EU | 🟡 | Provisioning en attente |
+| Stripe 3 produits | 🟡 | Free, Pro, Business à créer dans le dashboard |
+| Mistral AI key | 🟡 | À provisionner |
+| Sentry project | 🟡 | À provisionner |
+| Resend domain | 🟡 | À vérifier |
+| Turnstile widget | 🟡 | À configurer |
+| 8 site templates | 🟡 | Aura, Helix, Lumen, Scholar, Codex, Vitrine, Quill, Cercle |
+| CI/CD déplacé vers `.github/workflows/` | 🟡 | Subagent en cours |
+| 50 beta users | ⏳ | Post-M1 |
+
+## 🟢 M2 — Scale & Growth : **PLANIFIÉ**
+
+Roadmap complète dans `roadmap/phase-2-growth.md` (à venir).
+
+## 🟢 M3 — Public launch : **PLANIFIÉ**
+
+Roadmap complète dans `roadmap/phase-3-launch.md` (à venir).
+
+---
+
+## 🔁 Prochaines actions (M1-S3 → M1 déploiement)
+
+1. **Finaliser le provisioning Cloudflare** : créer l'org NEXUS, les Workers, D1, R2, KV, et le custom domain `api.myidentity.app`.
+2. **Setup Neon EU** : créer le projet, brancher DATABASE_URL dans Wrangler Secrets.
+3. **Stripe** : créer les 3 produits (Free, Pro, Business), brancher le webhook endpoint.
+4. **Sentry** : créer le projet, récupérer le DSN, brancher dans le runtime.
+5. **Resend** : vérifier le domaine, brancher RESEND_API_KEY.
+6. **Mistral** : créer la clé API, brancher MISTRAL_API_KEY.
+7. **Turnstile** : créer le widget, brancher les clés publique/privée.
+8. **Site templates** : générer les 8 templates (Aura, Helix, Lumen, Scholar, Codex, Vitrine, Quill, Cercle).
+9. **CI/CD** : déplacer les 4 workflows de `.github/_workflows/` vers `.github/workflows/`.
+10. **First deploy** : `wrangler deploy` sur les 3 Workers (API, Renderer, Edge).
+11. **Dashboard** : `wrangler pages deploy` sur Dashboard + Marketing + Docs.
+12. **Tests E2E** : Playwright sur 3 scénarios critiques (signup, paywall, render).
+13. **Beta** : ouvrir 50 inscriptions sur `myidentity.app/beta`, monitorer Sentry.
 14. **Tester la stack complète** : créer un site via le dashboard, publier, voir le rendu sur `{slug}.myidentity.app`.
 
 ## 🎯 Coûts d'infrastructure (M1 estimé)
@@ -81,14 +123,17 @@
 ## 🔒 Sécurité
 
 - License : MIT
-- Repo : privé (NEXUS)
-- 2FA à activer sur GitHub
+- Repo : **public** (NEXUS) — basculé en public le 2026-07-11
+- 2FA : à activer sur GitHub ASAP
 - Secrets : Wrangler Secrets + `.env` ignoré du git
 - RGPD : prêt (data export, account deletion, audit log)
 - DSA : transparency report + DMCA designated agent
+- SECURITY.md ✅, CODEOWNERS ✅, .well-known/{security,ai,humans}.txt ✅
+- SECURITY_CHECKLIST.md ✅ (50+ items, 7 catégories)
+- .copilotignore ✅ (AI training opt-out)
 
 ---
 
-*Dernière mise à jour : 2026-07-11 05:58 WAT*
-*Thread : 56*
+*Dernière mise à jour : 2026-07-11 07:05 WAT*
+*Thread : 57*
 *Repo : <https://github.com/systeme-robuste/my-identity>*

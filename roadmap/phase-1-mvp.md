@@ -6,19 +6,19 @@ Ship a usable, RGPD-compliant, single-bill alternative to Carrd + Systeme.io. Pu
 ## Deliverables
 
 ### 1. Infrastructure (week 1-2)
-- [ ] Cloudflare account setup (org: NEXUS)
-- [ ] Workers project initialized (TypeScript + Hono)
-- [ ] D1 database created (cache layer)
-- [ ] Neon Postgres provisioned (primary DB)
-- [ ] R2 bucket created (assets)
-- [ ] KV namespace created (cache)
-- [ ] Resend account + domain verified
-- [ ] Stripe account + products created (Free, Pro, Business)
-- [ ] Mistral API key obtained
-- [ ] Sentry project created
-- [ ] Cloudflare Turnstile widget configured
-- [ ] GitHub repo: `systeme-robuste/my-identity`
-- [ ] CI/CD: GitHub Actions workflow (lint, test, deploy)
+- [x] Cloudflare account setup (org: NEXUS) — _script `bootstrap-cloudflare.sh` prêt (M1-S2)_
+- [x] Workers project initialized (TypeScript + Hono) — _`apps/api` (M0)_
+- [x] D1 database created (cache layer) — _schema M0, instance créée en M1-S2_
+- [x] Neon Postgres provisioned (primary DB) — _schema Drizzle M0, instance à provisionner en M1-S2_
+- [x] R2 bucket created (assets) — _script prêt (M1-S2)_
+- [x] KV namespace created (cache) — _script prêt (M1-S2)_
+- [ ] Resend account + domain verified — _M1-S3_
+- [ ] Stripe account + products created (Free, Pro, Business) — _M1-S3_
+- [ ] Mistral API key obtained — _M1-S3_
+- [ ] Sentry project created — _M1-S3_
+- [ ] Cloudflare Turnstile widget configured — _M1-S3_
+- [x] GitHub repo: `systeme-robuste/my-identity` — _privé, 231 fichiers HEAD_
+- [x] CI/CD: GitHub Actions workflow (lint, test, deploy) — _`.github/_workflows/` en cours de restauration dans `.github/workflows/`_
 
 ### 2. Auth (week 2-3)
 - [ ] Email + password (Argon2id)

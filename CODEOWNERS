@@ -1,0 +1,44 @@
+# CODEOWNERS — auto-assign reviewers on PRs.
+# See https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# Order matters: the last matching rule wins.
+
+# Default owner (fallback for anything not matched below)
+/                       @systeme-robuste
+
+# Security-sensitive surfaces: require review from Y
+/SECURITY.md            @systeme-robuste
+/.env.example           @systeme-robuste
+/.copilotignore         @systeme-robuste
+/scripts/               @systeme-robuste
+
+# Database schema & migrations: require review from Y
+/packages/db/           @systeme-robuste
+/packages/db/schema/    @systeme-robuste
+**/migrations/          @systeme-robuste
+**/drizzle/             @systeme-robuste
+
+# Deploy / infra: require review from Y
+/.github/workflows/     @systeme-robuste
+/.github/_workflows/    @systeme-robuste
+/docker-compose.yml     @systeme-robuste
+/wrangler.toml          @systeme-robuste
+**/wrangler.*.toml      @systeme-robuste
+
+# Billing & payments: require review from Y
+/apps/api/src/lib/stripe/      @systeme-robuste
+/apps/api/src/routes/billing/   @systeme-robuste
+/apps/api/src/routes/checkout/  @systeme-robuste
+/apps/api/src/routes/webhooks/  @systeme-robuste
+
+# Auth & authorization: require review from Y
+/apps/api/src/lib/auth/         @systeme-robuste
+/apps/api/src/middleware/auth.ts @systeme-robuste
+/apps/api/src/routes/auth/      @systeme-robuste
+
+# Site template config & branding: require review from Y
+/docs/BRAND.md          @systeme-robuste
+/apps/marketing/        @systeme-robuste
+
+# Public well-known files (security.txt, ai.txt, humans.txt): Y
+/public/.well-known/     @systeme-robuste
+/.well-known/            @systeme-robuste

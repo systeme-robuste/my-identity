@@ -16,7 +16,7 @@
   "dependencies": {
     "@my-identity/db": "workspace:*",
     "@my-identity/shared": "workspace:*",
-    "drizzle-orm": "^0.30.0",
+    "drizzle-orm": "^0.31.0",
     "hono": "^4.4.0",
     "@hono/zod-validator": "^0.2.0",
     "@neondatabase/serverless": "^0.9.0",
@@ -24,7 +24,7 @@
     "resend": "^3.4.0",
     "stripe": "^15.0.0",
     "ulid": "^2.3.0",
-    "zod": "^3.23.0"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@cloudflare/workers-tsconfig": "^0.0.0",

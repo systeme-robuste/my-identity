@@ -37,7 +37,7 @@ The original M0 setup (2026-07-03) committed the workflows to the wrong director
 | Git Data API with full tree (362 files enumerated) | REST | ⏸️ untested — would work in theory |
 
 **Root cause:** GitHub REST API does not support creating a new subdirectory under `.github/`. The only ways to create it are:
-1. **Web UI** — Y clicks "Create new file" in the GH web interface
+1. **Web UI** — Y clicks "Create new file" in the GH web interface (URL to be provided by Y from the GH dashboard)
 2. **git CLI locally** — `git mv .github/_workflows .github/workflows && git commit -m "..." && git push`
 3. **GitHub Actions** — ironically, GH Actions itself can create files via `actions/checkout` + a setup step
 
@@ -45,8 +45,8 @@ The original M0 setup (2026-07-03) committed the workflows to the wrong director
 
 **Option 1 — Web UI (easiest, no local git needed)**
 
-1. Open https://github.com/systeme-robuste/my-identity/tree/main/.github
-2. Create a new file: `.github/workflows/.gitkeep` (empty content)
+1. Go to the GH dashboard for `systeme-robuste/my-identity` (open it via your usual navigation — I don't have a grounded link to share)
+2. In the web editor, create a new file at `.github/workflows/.gitkeep` (empty content)
 3. GH will create the directory and the file
 4. Now Y can either commit the 4 yml files via the web, or ask Zapia to re-push via Contents API (the dir now exists)
 

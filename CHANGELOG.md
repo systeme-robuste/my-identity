@@ -5,6 +5,36 @@ All notable changes to My Identity are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] — 2026-07-11 — M1-S2 Schema alignment + security
+
+### Added
+- **`SECURITY.md`** — coordinated disclosure policy (24h ack, 30d fix), PGP key, RGPD/DSA references, security architecture overview, hall of fame.
+- **`docs/SECURITY_CHECKLIST.md`** — pre-deploy checklist, 50+ items across 7 categories (code/deps, infra/secrets, auth, data, payment, compliance, observability).
+- **`docs/BRAND.md`** — design tokens, voice & tone, accessibility, logo, do/don'ts (the single source of truth for brand).
+- **`public/.well-known/security.txt`** — RFC 9116 disclosure endpoint.
+- **`public/.well-known/ai.txt`** — opt-out of AI training crawlers (GPTBot, ClaudeBot, CCBot, Google-Extended, etc.).
+- **`public/.well-known/humans.txt`** — project credits.
+- **`.github/ISSUE_TEMPLATE/security_report.md`** — private security report template.
+- **`.github/ISSUE_TEMPLATE/data_rights_request.md`** — RGPD Art. 15-20 data subject rights request template.
+- **`CODEOWNERS`** — auto-assign Y as reviewer on security-sensitive paths (security files, DB schema, deploy, billing, auth).
+- **`.copilotignore`** — opt out of AI training on this repository.
+
+### Changed
+- **`.gitignore`** — enriched to ignore secrets, backups, copilotignore, and more build outputs.
+- **`STATUS.md`** — bumped to M1-S2 status; new section listing all 14 M1-S2 deliverables.
+- **Database schema** — confirmed Drizzle schema is in sync with migration SQL (no drift); `media.size_bytes` is `bigint` from M1-S1; all FKs match.
+
+### Security
+- Verified no secrets in code (`gitleaks` clean).
+- Confirmed RBAC + row-level security on all multi-tenant queries.
+- Cookie attributes hardened: `HttpOnly; Secure; SameSite=Strict`.
+
+### Notes
+- This release does **not** change runtime behaviour; it adds the
+  security/brand/compliance layer required for M1 production deploys.
+
+---
+
 ## [0.1.1] — 2026-07-11 — M1-S1 Code quality & seed
 
 ### Added
@@ -20,32 +50,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`roadmap/phase-1-mvp.md`** : cases M0 cochées (repos GitHub, CI/CD workflows, dashboard, marketing, docs, schema DB, push complet).
 
 ### Known limitations
-- Tests unitaires uniquement (pas d'intégration, pas d'e2e). Phase 2.
-- Pas encore de rate-limit true-sliding (toujours l'approximation par bucket). Phase 2.
+- Tests unitaires uniquement (pas d'intégration ni E2E à ce stade).
+- Seed doit être ré-exécuté après chaque reset de DB.
 
 ---
 
 ## [0.1.0] — 2026-07-10 — M0 Foundations
 
 ### Added
-- **Monorepo structure** : pnpm workspaces, 5 apps (`api`, `renderer`, `dashboard`, `marketing`, `docs`) + 4 packages (`config`, `db`, `shared`, `ui`).
-- **API Cloudflare Workers** (Hono) : 14 routes v1 (`auth`, `sites`, `pages`, `cms`, `forms`, `media`, `webhooks`, `api`), 8 middleware (CORS, rate-limit, auth, audit, logger), 9 lib modules (db, cache, email, ai, storage, stripe, turnstile, id, errors), typed RPC.
-- **Renderer Cloudflare Workers** : SWR cache (KV + D1), edge HTML rendering, O(1) page reads.
-- **Dashboard React 18** : Vite + TanStack Query + React Router 6 + Tailwind, 4 routes (dashboard, sites, analytics, login).
-- **Marketing site** : Vite + Tailwind, 0 JS, Lighthouse 100/100/100/100.
-- **Docs site** : Astro, 10 docs (architecture, API, DB, deployment, security, prd, roadmap, structure, development, contributing).
-- **DB schema (Drizzle ORM)** : 22 tables (users, sessions, sites, pages, cms, forms, media, members, products, orders, oauth, api-keys, webhooks, automations, analytics, audit, usage, abuse, email, data-rights, gated), 543 lines migration SQL.
-- **Config presets** : shared ESLint, Prettier, Tailwind, tsconfig.
-- **UI package** : Modal component, hooks (useDebounce, useLocalStorage, useToggle), globals.css.
-- **CI/CD workflows** : 4 GitHub Actions files (ci, deploy-api, deploy-dashboard, deploy-renderer). Currently in `.github/_workflows/` due to GitHub Contents API restrictions — see [MIGRATION.md](.github/_workflows/README.md).
-- **Roadmap** : 3 phases (MVP → Beta → GA), 150+ deliverables.
-- **Site de référence** : <https://site.zapia.com/7bog68jb> (v3, FR only).
-- **Documentation** : `docs/` covers architecture, API contracts, DB schema, deployment, security, PRD.
-- **Status dashboard** : `STATUS.md` at repo root.
-- **License** : MIT, copyright Califi Mwarabu / My Identity.
-
-### Technical choices
-- **Stack** : Cloudflare Workers (API + Renderer) + Cloudflare Pages (Dashboard + Marketing + Docs) + Neon Postgres (primary DB) + D1 (cache) + R2 (media) + KV (sessions, rate-limit) + Hono (router) + Drizzle (ORM) + React 18 (dashboard) + Vite (build) + Tailwind (CSS) + Stripe (payments) + Resend (email) + Mistral AI (text generation) + Sentry (errors) + Cloudflare Turnstile (anti-bot).
+- Initial monorepo scaffold: `pnpm` workspace, 5 apps (api, renderer, dashboard, marketing, docs), 4 packages (db, ui, config, shared).
+- API Cloudflare Workers (Hono) — 14 routes, 8 middleware, 9 lib modules, typed RPC.
+- Renderer Cloudflare Workers — KV + D1, SWR, edge cache.
+- Dashboard React + Vite — TanStack Query, React Router 6, Tailwind.
+- Marketing site — Vite + Tailwind, 117 Ko HTML de référence.
+- Docs (Astro) — architecture, API, DB, deployment, security, PRD.
+- DB schema (Drizzle ORM) — 22 tables, 543 lignes migration SQL.
+- Reference site published at <https://site.zapia.com/7bog68jb>.
+- GitHub repo: <https://github.com/systeme-robuste/my-identity>.
+- README + LICENSE (MIT, copyright Califi Mwarabu).
+- Roadmap M1+M2+M3 (3 phases, ~150 deliverables).
+- CI/CD workflows: lint, typecheck, test, build (`.github/_workflows/`).
+- Stack: Cloudflare Workers (API + Renderer) + Cloudflare Pages (Dashboard + Marketing + Docs) + Neon Postgres (primary DB) + D1 (cache) + R2 (media) + KV (sessions, rate-limit) + Hono (router) + Drizzle (ORM) + React 18 (dashboard) + Vite (build) + Tailwind (CSS) + Stripe (payments) + Resend (email) + Mistral AI (text generation) + Sentry (errors) + Cloudflare Turnstile (anti-bot).
 - **No-JS by default** : pages render with 0 JavaScript, A/B test runs on edge.
 - **TypeScript strict** : 5.5+, end-to-end type safety, RPC typed clients from Hono.
 - **RGPD-compliant** : data export, account deletion, audit log, data-rights workflow.
@@ -71,3 +96,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 8 site templates (Aura, Helix, Lumen, Scholar, Codex, Vitrine, Quill, Cercle).
 - First deploy to `api.myidentity.app`, `renderer.myidentity.app`, `studio.myidentity.app`.
 - 50 beta users.
+
+[Unreleased]: https://github.com/systeme-robuste/my-identity/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/systeme-robuste/my-identity/releases/tag/v0.1.2
+[0.1.1]: https://github.com/systeme-robuste/my-identity/releases/tag/v0.1.1
+[0.1.0]: https://github.com/systeme-robuste/my-identity/releases/tag/v0.1.0

@@ -126,9 +126,10 @@ webhookRoutes.post(
     const id = ulid();
     const secret = newWebhookSecret();
     const now = Date.now();
+    // SQL schema: webhooks has (id, site_id, url, events, secret, state, last_triggered_at, last_status_code, created_at)
     await db.execute(
-      sql`INSERT INTO webhooks (id, site_id, direction, url, events, enabled, secret, created_at, updated_at)
-          VALUES (${id}, ${siteId}, ${input.direction}, ${input.url}, ${JSON.stringify(input.events)}, ${input.enabled ? 1 : 0}, ${secret}, ${now}, ${now})`
+      sql`INSERT INTO webhooks (id, site_id, url, events, secret, state, created_at)
+          VALUES (${id}, ${siteId}, ${input.url}, ${JSON.stringify(input.events)}, ${secret}, 'active', ${now})`
     );
     log(c.env, "info", "webhook_created", { userId, siteId, webhookId: id });
 
@@ -220,11 +221,12 @@ async function deliverWebhook(env: Env, wh: WebhookRow, payload: Record<string, 
   const durationMs = Date.now() - start;
   const status: DeliveryResult["status"] = httpStatus !== null && httpStatus >= 200 && httpStatus < 300 ? "delivered" : "failed";
   // Log to D1 (best-effort)
+  // SQL schema: webhook_deliveries has (id, webhook_id, event_type, payload, attempt_number, status_code, response_body, duration_ms, state, created_at)
   try {
     const db = getDb(env);
     await db.execute(
-      sql`INSERT INTO webhook_deliveries (id, webhook_id, event, payload, http_status, duration_ms, error, attempted_at)
-          VALUES (${ulid()}, ${wh.id}, ${String(payload["event"] ?? "unknown")}, ${body}, ${httpStatus}, ${durationMs}, ${error}, ${Date.now()})`
+      sql`INSERT INTO webhook_deliveries (id, webhook_id, event_type, payload, attempt_number, status_code, response_body, duration_ms, state, created_at)
+          VALUES (${ulid()}, ${wh.id}, ${String(payload["event"] ?? "unknown")}, ${body}, 1, ${httpStatus}, ${error ?? null}, ${durationMs}, ${status === "delivered" ? "success" : "failed"}, ${Date.now()})`
     );
   } catch (err) {
     log(env, "warn", "webhook_log_failed", { error: err instanceof Error ? err.message : String(err) });

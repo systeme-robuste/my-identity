@@ -1,0 +1,28 @@
+# humans.txt — http://humanstxt.org/
+# We are the humans behind My Identity.
+
+/* TEAM */
+Founder, CEO, Lead Engineer: Califi Mwarabu (Mwarabu Musema) — <https://github.com/systeme-robuste>
+Security & Compliance Lead: Califi Mwarabu
+Product & Brand: Califi Mwarabu
+DX & Documentation: Califi Mwarabu
+Infrastructure: Califi Mwarabu
+
+/* SITE */
+Last update: 2026-07-11
+Standards: HTML5, CSS3, ES2022, TypeScript 5.5+
+Components: React 18, Hono, Drizzle, Cloudflare Workers, Vite, Tailwind
+Software: Node 20, pnpm 9, Postgres 16, Redis 7, Wrangler 3, D1, R2, KV
+
+/* THANKS */
+- Cloudflare Workers & D1 (edge runtime)
+- Drizzle ORM (typed SQL)
+- React & Vite (dashboard)
+- Hono (HTTP router)
+- Astro (docs site)
+- pnpm (monorepo)
+- Open-source community (dependencies listed in package.json)
+
+/* NOTE */
+This is a small, founder-driven project. Reach out via
+hello@myidentity.app if you want to contribute or have feedback.

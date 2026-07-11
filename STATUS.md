@@ -120,6 +120,48 @@ Roadmap complète dans `roadmap/phase-3-launch.md` (à venir).
 - 4.5/5 user rating
 - Lighthouse 100/100/100/100 sur le site de référence
 
+## 🟢 M1-S3 — Phase 1 prep & runbook suite : **100% COMPLET** (2026-07-11 12:00 WAT)
+
+| Élément | Statut | Détail |
+|---|---|---|
+| `cache` table (migration 0002) | ✅ | Drizzle schema + Drizzle relations, ferme D3 |
+| 5 E2E Playwright scenarios | ✅ | signup, form, checkout, publish, RGPD export |
+| `e2e/playwright.config.ts` + `e2e/fixtures/api.ts` | ✅ | Test scaffolding partagé |
+| `scripts/migrate.sh` | ✅ | Idempotent, applique les migrations en ordre |
+| `scripts/seed-local.sh` + `packages/db/src/seed.ts` (394 lignes) | ✅ | admin, 4 plans, 5 sites démo, 4 thèmes |
+| `docs/operations/PHASE1.md` (115 lignes) | ✅ | 8 secrets, 7 étapes, rollback, post-Phase 1 |
+| `docs/operations/DOMAIN_SETUP.md` (105 lignes) | ✅ | Guide achat domaine + DNS, template pré-rempli |
+| `docs/operations/BOOTSTRAP_AUDIT.md` (99 lignes) | ✅ | Audit du `bootstrap-cloudflare.sh` |
+| `docs/operations/TROUBLESHOOTING.md` (337 lignes) | ✅ | 10 pannes courantes + fixes + escalade |
+| `e2e/load/k6-smoke.js` (165 lignes) | ✅ | 3 scénarios : warmup 10VUs + load 50VUs + spike 200VUs |
+| `e2e/load/README.md` (130 lignes) | ✅ | Stratégie + seuils + interprétation |
+| 4 GitHub Actions workflows migrés | ✅ | `.github/_workflows/` → `.github/workflows/` (Git Data API, commit atomique) |
+
+**Fixes critiques du sprint :**
+- D1 : webhook INSERT userId manquant
+- D2 : webhook ORDER BY race condition
+- D3 : `cache` table absente du Drizzle schema
+- Bug path workflows : 4 fichiers dans `.github/_workflows/` (avec underscore) — GH Actions ne les détecte PAS. Corrigé en 1 commit atomique.
+
+**Total repo :** 359 fichiers, 30 000+ lignes.
+
+## 🟡 Phase 1 — Provisioning : **EN ATTENTE** des 8 secrets
+
+| # | Secret | Statut |
+|---|---|---|
+| 1 | `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` | ⏳ en attente (Y) |
+| 2 | `NEON_DATABASE_URL` + `NEON_DATABASE_URL_UNPOOLED` | ⏳ en attente (Y) |
+| 3 | `RESEND_API_KEY` | ⏳ en attente (Y) |
+| 4 | `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` | ⏳ en attente (Y) — KYC en cours |
+| 5 | `MISTRAL_API_KEY` | ⏳ en attente (Y) |
+| 6 | `SENTRY_DSN` (optionnel) | ⏳ en attente (Y) |
+| 7 | `TURNSTILE_SITE_KEY` + `TURNSTILE_SECRET_KEY` (optionnel) | ⏳ en attente (Y) |
+| 8 | `DOMAIN` + DNS configuré | ⏳ en attente (Y) — achat imminent |
+
+**ETA pour la mise en service :** < 1h une fois les 8 secrets dans le vault.
+
+---
+
 ## 🔒 Sécurité
 
 - License : MIT

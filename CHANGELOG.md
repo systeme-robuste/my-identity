@@ -5,6 +5,26 @@ All notable changes to My Identity are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.1] — 2026-07-11 — M1-S1 Code quality & seed
+
+### Added
+- **Tests unitaires** : 7 fichiers `*.test.ts` dans `apps/api` (logger, cache, rate-limit, auth, id, errors, shared/id). Vitest 1.6+, run via `pnpm --filter @my-identity/api test`.
+- **Seed DB** : `packages/db/seed.ts` (idempotent, 1 user + 1 site démo, exécutable via `pnpm --filter @my-identity/db seed`).
+- **`docs/performance.md`** : Lighthouse, Core Web Vitals, bundle budgets, edge budgets, observabilité, SLO. Single source of truth pour la performance.
+
+### Changed
+- **`packages/db/src/schema/media.ts`** : `size_bytes` passe de `text` à `bigint` (aligné PG `bigint`, plus de cast manuel en lecture).
+- **`packages/db/package.json`** : ajout `postgres` (driver de seed) + `tsx` (exécution TypeScript). Nouvelle entrée script `seed`.
+- **`scripts/bootstrap-cloudflare.sh`** : preflight `env-var check` ajouté (refuse de démarrer si `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` absents, sort en `exit 2`).
+- **`STATUS.md`** : nouvelle section M1-S1 à 100 % + MAJ thread / timestamp.
+- **`roadmap/phase-1-mvp.md`** : cases M0 cochées (repos GitHub, CI/CD workflows, dashboard, marketing, docs, schema DB, push complet).
+
+### Known limitations
+- Tests unitaires uniquement (pas d'intégration, pas d'e2e). Phase 2.
+- Pas encore de rate-limit true-sliding (toujours l'approximation par bucket). Phase 2.
+
+---
+
 ## [0.1.0] — 2026-07-10 — M0 Foundations
 
 ### Added

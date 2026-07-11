@@ -84,6 +84,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.1.3] — 2026-07-11 — M1-S3 Phase 1 prep
+
+### Added
+- **`cache` table** (migration 0002) + Drizzle schema + Drizzle relations. Closes D3.
+- **5 E2E scenarios (Playwright)**: signup, form submission, checkout, page publish, RGPD data export. Closes the test gap from M0.
+- **`e2e/playwright.config.ts`** + **`e2e/fixtures/api.ts`** — shared test scaffolding.
+- **`scripts/migrate.sh`** — applies SQL migrations in order on D1/Postgres. Idempotent.
+- **`scripts/seed-local.sh`** + **`packages/db/src/seed.ts`** (394 lines) — admin user, 4 plans, 5 demo sites, 4 themes.
+- **`docs/operations/PHASE1.md`** (115 lines) — Phase 1 deployment runbook.
+- **`docs/operations/DOMAIN_SETUP.md`** (105 lines) — domain purchase + DNS config guide.
+- **`docs/operations/BOOTSTRAP_AUDIT.md`** (99 lines) — audit of bootstrap-cloudflare.sh.
+- **`docs/operations/TROUBLESHOOTING.md`** (337 lines) — 10 common prod issues + fixes.
+- **`e2e/load/k6-smoke.js`** (165 lines) — 3-scenario load test: warmup 10 VUs × 30s + load 50 VUs × 1m + spike 200 VUs × 30s. Thresholds: p95<500ms, p99<1500ms, errors<1%.
+- **`e2e/load/README.md`** (130 lines) — load test strategy.
+- **4 GitHub Actions workflows** (moved to correct `.github/workflows/` path via subagent — closes the M0 known limitation).
+
+### Fixed
+- **D1**: webhook INSERT missing userId (was inserting orphan rows).
+- **D2**: webhook ORDER BY race condition (using createdAt instead of id).
+- **D3**: missing `cache` table in Drizzle schema.
+- **Workflows path bug**: 4 workflows were in `.github/_workflows/` (with underscore) — GitHub Actions does NOT detect them. Migrated to `.github/workflows/` via Git Data API in a single atomic commit.
+
+### Changed
+- **`STATUS.md`**: bumped to M1-S3 status; new section listing all 12 M1-S3 deliverables.
+- **15 Drizzle relations** now cover the full schema graph (was 0 in M0).
+
+### Pending (Phase 1)
+- 8 secrets in vault (waiting for Y).
+- Domain purchase (waiting for Y).
+- Stripe Live activation (KYC in progress).
+- Resend domain verification (waiting for DNS access).
+
+---
+
 ## [Unreleased] — M1 Build & Deploy
 
 - Cloudflare org NEXUS + Workers, D1, R2, KV provisioning.

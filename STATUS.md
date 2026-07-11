@@ -1,6 +1,6 @@
 # My Identity — STATUS
 
-> Dashboard synthétique de l'état du projet au **2026-07-10**.
+> Dashboard synthétique de l'état du projet au **2026-07-11**.
 
 ## 🟢 M0 — Foundations & Push GitHub : **100% COMPLET**
 
@@ -19,6 +19,20 @@
 | README + LICENSE | ✅ | MIT, copyright Califi Mwarabu |
 | Roadmap M1+M2+M3 | ✅ | 3 phases, ~150 deliverables |
 | CI/CD workflows | 🟡 | Présents dans `.github/_workflows/` (en cours de déplacement vers `.github/workflows/`) |
+
+## 🟢 M1-S1 — Code quality & seed : **100% COMPLET** (2026-07-11)
+
+| Élément | Statut | Détail |
+|---|---|---|
+| Tests unitaires (logger, cache, rate-limit, auth, id, errors) | ✅ | 7 fichiers `*.test.ts`, vitest 1.6+, `pnpm --filter @my-identity/api test` |
+| Seed DB (Drizzle) | ✅ | `packages/db/seed.ts` + `tsx`, idempotent, 1 site démo + 1 user démo |
+| Postgres + tsx ajoutés à `packages/db` | ✅ | Pour exécution locale du seed |
+| `media.size_bytes` en `bigint` (Drizzle) | ✅ | Plus de `text`, aligné PG `bigint` |
+| `docs/performance.md` | ✅ | Lighthouse / CWV / bundle budgets / edge / DB / SLO |
+| CI = 1 PUT Contents API par appel | ✅ | Pattern documenté dans RULES.md (subagent) |
+
+**Métriques HEAD :** 231 fichiers source, 7 fichiers de tests, 1 seed,
+4 docs M1 (`performance.md` + MAJ `STATUS`/`CHANGELOG`/`roadmap`).
 
 ## 🟡 Prochaines étapes (M1 — Build & Deploy)
 
@@ -75,6 +89,6 @@
 
 ---
 
-*Dernière mise à jour : 2026-07-10 15:25 WAT*
-*Thread : 53*
+*Dernière mise à jour : 2026-07-11 05:58 WAT*
+*Thread : 56*
 *Repo : <https://github.com/systeme-robuste/my-identity>*

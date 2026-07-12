@@ -9,7 +9,7 @@
 import type { Env } from "../types/env.d.ts";
 import { ApiError } from "./errors.ts";
 
-export async function verifyTurnstile(env: Env, token: string, remoteIp: string | null): Promise<boolean> {
+export async function verifyTurnstileToken(env: Env, token: string, remoteIp: string | null): Promise<boolean> {
   if (!token) throw new ApiError("turnstile_failed", "Missing Turnstile token", 400);
   const body = new URLSearchParams();
   body.set("secret", env.TURNSTILE_SECRET_KEY);

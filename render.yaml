@@ -15,7 +15,7 @@ services:
     runtime: node
     plan: free
     rootDir: apps/api
-    buildCommand: pnpm install --frozen-lockfile=false && pnpm run build && pnpm run render:bundle
+    buildCommand: pnpm install --frozen-lockfile=false && pnpm run render:bundle
     startCommand: pnpm run start:node
     healthCheckPath: /health
     envVars:
@@ -86,7 +86,7 @@ services:
     runtime: node
     plan: free
     rootDir: apps/renderer
-    buildCommand: pnpm install --frozen-lockfile=false && pnpm run build && pnpm run render:bundle
+    buildCommand: pnpm install --frozen-lockfile=false && pnpm run render:bundle
     startCommand: pnpm run start:node
     healthCheckPath: /health
     envVars:

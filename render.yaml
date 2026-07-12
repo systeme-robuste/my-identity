@@ -1,22 +1,171 @@
+# Render Blueprint for My Identity
+# Deploys 5 services (2 Workers-like as Node services, 3 static sites).
+# Triggered automatically when this file is updated on the main branch,
+# or via POST /v1/blueprints with the blueprint spec.
+#
+# Docs: https://render.com/docs/blueprint-spec
+#
+# Pricing: 5 free Web Services + 5 free Static Sites, then $7/mo each.
+# For M0 demo we use free instances; scale up after first revenue.
+
 services:
+  # ---------- 1. API (Workers -> Node service) ----------
   - type: web
-    name: gout-gueule
-    env: node
+    name: my-identity-api
+    runtime: node
     plan: free
-    buildCommand: npm install
-    startCommand: npm start
+    rootDir: apps/api
+    buildCommand: pnpm install --frozen-lockfile=false && pnpm run build && pnpm run render:bundle
+    startCommand: pnpm run start:node
+    healthCheckPath: /health
     envVars:
+      - key: RUNTIME
+        value: node
       - key: NODE_ENV
         value: production
-      - key: DATA_DIR
-        value: /var/lib/goutgueule/storage
-      - key: ADMIN_EMAIL
+      - key: PORT
+        value: 10000
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: info
+      - key: APP_NAME
+        value: My Identity API
+      - key: APP_VERSION
+        value: 0.1.0
+      - key: APP_BASE_URL
+        value: https://studio.myidentity.app
+      - key: RENDERER_BASE_URL
+        value: https://renderer.myidentity.app
+      - key: CORS_ORIGINS
+        value: https://studio.myidentity.app,https://myidentity.app
+      - key: UPSTASH_REDIS_REST_URL
         sync: false
-      - key: ADMIN_PASSWORD
+      - key: UPSTASH_REDIS_REST_TOKEN
         sync: false
-      - key: SESSION_SECRET
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET_NAME
+        value: my-identity-media
+      - key: R2_PUBLIC_BASE_URL
+        value: https://media.myidentity.app
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_URL_UNPOOLED
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM_EMAIL
+        value: hello@myidentity.app
+      - key: RESEND_REPLY_TO
+        value: hello@myidentity.app
+      - key: MISTRAL_API_KEY
+        sync: false
+      - key: MISTRAL_MODEL
+        value: mistral-small-latest
+      - key: TURNSTILE_SITE_KEY
+        sync: false
+      - key: TURNSTILE_SECRET_KEY
+        sync: false
+      - key: AUTH_SECRET
         generateValue: true
-    disk:
-      name: goutgueule-storage
-      mountPath: /var/lib/goutgueule/storage
-      sizeGB: 1
+      - key: AUTH_SESSION_COOKIE_NAME
+        value: mi_session
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+
+  # ---------- 2. Renderer (Workers -> Node service) ----------
+  - type: web
+    name: my-identity-renderer
+    runtime: node
+    plan: free
+    rootDir: apps/renderer
+    buildCommand: pnpm install --frozen-lockfile=false && pnpm run build && pnpm run render:bundle
+    startCommand: pnpm run start:node
+    healthCheckPath: /health
+    envVars:
+      - key: RUNTIME
+        value: node
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: ENVIRONMENT
+        value: production
+      - key: APP_NAME
+        value: My Identity Renderer
+      - key: APP_VERSION
+        value: 0.1.0
+      - key: API_BASE_URL
+        value: https://api.myidentity.app
+      - key: CACHE_TTL_SECONDS
+        value: "300"
+      - key: CACHE_STALE_SECONDS
+        value: "86400"
+      - key: UPSTASH_REDIS_REST_URL
+        sync: false
+      - key: UPSTASH_REDIS_REST_TOKEN
+        sync: false
+      - key: NEON_DATABASE_URL
+        sync: false
+
+  # ---------- 3. Dashboard (Vite SPA) ----------
+  - type: static_site
+    name: my-identity-dashboard
+    plan: free
+    rootDir: apps/dashboard
+    buildCommand: pnpm install --frozen-lockfile=false && pnpm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://my-identity-api.onrender.com/api/*
+      - type: rewrite
+        source: /v1/*
+        destination: https://my-identity-api.onrender.com/v1/*
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+
+  # ---------- 4. Marketing site ----------
+  - type: static_site
+    name: my-identity-marketing
+    plan: free
+    rootDir: apps/marketing
+    buildCommand: pnpm install --frozen-lockfile=false && pnpm run build
+    staticPublishPath: dist
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+
+  # ---------- 5. Docs (Astro) ----------
+  - type: static_site
+    name: my-identity-docs
+    plan: free
+    rootDir: apps/docs
+    buildCommand: pnpm install --frozen-lockfile=false && pnpm run build
+    staticPublishPath: dist
+    headers:
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable

@@ -14,9 +14,8 @@ services:
     name: my-identity-api
     runtime: node
     plan: free
-    rootDir: apps/api
-    buildCommand: pnpm install --frozen-lockfile=false && pnpm run render:bundle
-    startCommand: pnpm run start:node
+    buildCommand: pnpm install --frozen-lockfile=false && pnpm --filter @my-identity/api run render:bundle
+    startCommand: cd apps/api && pnpm run start:node
     healthCheckPath: /health
     envVars:
       - key: RUNTIME
@@ -85,9 +84,8 @@ services:
     name: my-identity-renderer
     runtime: node
     plan: free
-    rootDir: apps/renderer
-    buildCommand: pnpm install --frozen-lockfile=false && pnpm run render:bundle
-    startCommand: pnpm run start:node
+    buildCommand: pnpm install --frozen-lockfile=false && pnpm --filter @my-identity/renderer run render:bundle
+    startCommand: cd apps/renderer && pnpm run start:node
     healthCheckPath: /health
     envVars:
       - key: RUNTIME
@@ -119,9 +117,8 @@ services:
   - type: web
     runtime: static
     name: my-identity-dashboard
-    rootDir: apps/dashboard
-    buildCommand: pnpm install --frozen-lockfile=false && pnpm run build
-    staticPublishPath: dist
+    buildCommand: pnpm install --frozen-lockfile=false && pnpm --filter @my-identity/dashboard run build
+    staticPublishPath: apps/dashboard/dist
     routes:
       - type: rewrite
         source: /api/*
@@ -144,9 +141,8 @@ services:
   - type: web
     runtime: static
     name: my-identity-marketing
-    rootDir: apps/marketing
-    buildCommand: pnpm install --frozen-lockfile=false && pnpm run build
-    staticPublishPath: dist
+    buildCommand: pnpm install --frozen-lockfile=false && pnpm --filter @my-identity/marketing run build
+    staticPublishPath: apps/marketing/dist
     headers:
       - path: /*
         name: X-Content-Type-Options
@@ -159,9 +155,8 @@ services:
   - type: web
     runtime: static
     name: my-identity-docs
-    rootDir: apps/docs
-    buildCommand: pnpm install --frozen-lockfile=false && pnpm run build
-    staticPublishPath: dist
+    buildCommand: pnpm install --frozen-lockfile=false && pnpm --filter @my-identity/docs run build
+    staticPublishPath: apps/docs/dist
     headers:
       - path: /*
         name: X-Content-Type-Options

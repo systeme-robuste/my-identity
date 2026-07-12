@@ -7,7 +7,7 @@
     "dev": "wrangler dev",
     "dev:node": "tsx watch src/node-server.ts",
     "build": "wrangler deploy --dry-run --outdir=dist",
-    "build:node": "esbuild src/node-server.ts --bundle --platform=node --target=node20 --format=esm --outfile=dist/node-server.mjs --packages=external",
+    "build:node": "esbuild src/node-server.ts --bundle --platform=node --target=node20 --format=esm --outfile=dist/node-server.mjs",
     "render:bundle": "pnpm run build:node",
     "render:build": "pnpm run render:bundle",
     "start:node": "node dist/node-server.mjs",

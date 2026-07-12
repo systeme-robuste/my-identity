@@ -116,7 +116,7 @@ services:
         sync: false
 
   # ---------- 3. Dashboard (Vite SPA) ----------
-  - type: static_site
+  - type: static
     name: my-identity-dashboard
     plan: free
     rootDir: apps/dashboard
@@ -141,7 +141,7 @@ services:
         value: public, max-age=31536000, immutable
 
   # ---------- 4. Marketing site ----------
-  - type: static_site
+  - type: static
     name: my-identity-marketing
     plan: free
     rootDir: apps/marketing
@@ -156,7 +156,7 @@ services:
         value: public, max-age=31536000, immutable
 
   # ---------- 5. Docs (Astro) ----------
-  - type: static_site
+  - type: static
     name: my-identity-docs
     plan: free
     rootDir: apps/docs

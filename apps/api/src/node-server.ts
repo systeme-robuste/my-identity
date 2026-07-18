@@ -65,9 +65,9 @@ async function main(): Promise<void> {
   log("main", "main() started");
 
   // --- 1. Imports ---------------------------------------------------------
-  let serveFn: typeof import("@hono/node-server").serve;
-  let app: import("hono").Hono;
-  let buildNodeEnv: () => ReturnType<typeof import("./node-env.js").buildNodeEnv>;
+  let serveFn: (opts: any, cb?: (info: { address: string; port: number }) => void) => any;
+  let app: any;
+  let buildNodeEnv: () => any;
 
   try {
     log("import", "importing @hono/node-server");
@@ -120,12 +120,12 @@ async function main(): Promise<void> {
 
   // --- 3. Start the server -----------------------------------------------
   const port = Number(process.env.PORT ?? 10000);
-  log("serve", `preparing to bind 0.0.0.0:${port}`);
+  log("serve", `preparing to bind on port ${port}`);
 
   // Wrap Hono's fetch to inject the env as the second argument. Hono's
   // `app.fetch(request, env, ctx)` signature matches the Workers API, so
   // this is a thin passthrough.
-  const nodeFetch = (request: Request): Promise<Response> => app.fetch(request, env as any);
+  const nodeFetch = (request: Request): Promise<Response> => app.fetch(request, env);
 
   try {
     serveFn(
@@ -134,8 +134,8 @@ async function main(): Promise<void> {
         port,
         hostname: "0.0.0.0",
       },
-      (info) => {
-        log("serve", `LISTENING on http://${info.address}:${info.port} — SERVER IS LIVE`);
+      (info: { address: string; port: number }) => {
+        log("serve", `LISTENING on ${info.address}:${info.port} — SERVER IS LIVE`);
       },
     );
     log("serve", "serve() returned synchronously (server is async)");

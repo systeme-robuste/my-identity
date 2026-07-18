@@ -16,89 +16,161 @@
  * in the bindings package.
  */
 
-process.stderr.write("[api:boot] node-server.ts: file entered\n");
+// ============================================================================
+// CRASH SHIELD (top-level) — must be installed BEFORE any import that could
+// fail. Catches anything that escapes even the try/catch in main().
+// ============================================================================
 
-async function main() {
-  process.stderr.write("[api:boot] main() start\n");
+/**
+ * Format a log line for Render. Render captures stdout/stderr from the
+ * Node process, and `console.error` is the most reliable channel —
+ * the platform forwards it to the deploy log stream.
+ */
+function log(stage: string, msg: string, extra?: unknown): void {
+  const ts = new Date().toISOString();
+  const tail = extra === undefined ? "" : ` | ${JSON.stringify(extra)}`;
+  const line = `[${ts}] [api:boot] [${stage}] ${msg}${tail}\n`;
+  // console.error writes to stderr; flush is implicit on each call.
+  console.error(line);
+}
 
-  let serve: any;
-  let app: any;
-  let buildNodeEnv: any;
+log("shield", "installing global crash handlers");
+process.on("uncaughtException", (err) => {
+  log("shield", "UNCAUGHT EXCEPTION", { message: err.message, stack: err.stack });
+  process.exit(1);
+});
+process.on("unhandledRejection", (reason) => {
+  const err = reason instanceof Error ? reason : new Error(String(reason));
+  log("shield", "UNHANDLED REJECTION", { message: err.message, stack: err.stack });
+  process.exit(1);
+});
+
+log("boot", "node-server.ts: file entered, runtime detected", {
+  node: process.version,
+  platform: process.platform,
+  arch: process.arch,
+  pid: process.pid,
+  envRuntime: process.env.RUNTIME ?? "(unset)",
+  envPort: process.env.PORT ?? "(unset)",
+});
+
+// ============================================================================
+// MAIN — wrapped in a top-level async IIFE that funnels every error into
+// the same log channel. We use dynamic imports so a module that throws
+// at load time lands in the catch block instead of crashing the file
+// before main() ever runs.
+// ============================================================================
+
+async function main(): Promise<void> {
+  log("main", "main() started");
+
+  // --- 1. Imports ---------------------------------------------------------
+  let serveFn: typeof import("@hono/node-server").serve;
+  let app: import("hono").Hono;
+  let buildNodeEnv: () => ReturnType<typeof import("./node-env.js").buildNodeEnv>;
 
   try {
-    process.stderr.write("[api:boot] importing @hono/node-server\n");
-    ({ serve } = await import("@hono/node-server"));
-    process.stderr.write("[api:boot] @hono/node-server imported OK\n");
+    log("import", "importing @hono/node-server");
+    const honoNode = await import("@hono/node-server");
+    serveFn = honoNode.serve;
+    log("import", "@hono/node-server loaded");
 
-    process.stderr.write("[api:boot] importing ./index.ts (Hono app)\n");
+    log("import", "importing ./index.ts (Hono app)");
     const appMod = await import("./index.ts");
-    app = appMod.default ?? appMod.app;
-    process.stderr.write("[api:boot] Hono app imported OK\n");
+    app = (appMod as any).default ?? (appMod as any).app;
+    if (!app) throw new Error("Hono app not exported (neither `default` nor `app`)");
+    log("import", "./index.ts loaded");
 
-    process.stderr.write("[api:boot] importing ./node-env.ts\n");
+    log("import", "importing ./node-env.ts");
     const envMod = await import("./node-env.ts");
-    buildNodeEnv = envMod.buildNodeEnv;
-    process.stderr.write("[api:boot] node-env imported OK\n");
-  } catch (importErr) {
-    process.stderr.write(`[api:boot] FATAL import error: ${importErr instanceof Error ? importErr.stack : String(importErr)}\n`);
+    buildNodeEnv = (envMod as any).buildNodeEnv;
+    if (typeof buildNodeEnv !== "function") {
+      throw new Error("buildNodeEnv is not a function");
+    }
+    log("import", "./node-env.ts loaded");
+  } catch (err) {
+    log("import", "FATAL: import failed", {
+      message: (err as Error).message,
+      stack: (err as Error).stack,
+    });
     process.exit(1);
+    return; // unreachable, but keeps the type-checker happy
   }
 
-  // Build the env ONCE per process. The bindings (KV/D1/R2) are
-  // process-singletons. The plain string fields are also cached.
-  let env;
+  // --- 2. Build env -------------------------------------------------------
+  let env: ReturnType<typeof buildNodeEnv>;
   try {
-    process.stderr.write("[api:boot] calling buildNodeEnv()\n");
+    log("env", "calling buildNodeEnv()");
     env = buildNodeEnv();
-    process.stderr.write("[api:boot] buildNodeEnv() returned OK\n");
-  } catch (envErr) {
-    process.stderr.write(`[api:boot] FATAL buildNodeEnv error: ${envErr instanceof Error ? envErr.stack : String(envErr)}\n`);
+    log("env", "buildNodeEnv() succeeded", {
+      RUNTIME: env.RUNTIME,
+      ENVIRONMENT: (env as any).ENVIRONMENT,
+      hasUpstash: Boolean((env as any).UPSTASH_REDIS_REST_URL),
+      hasR2: Boolean((env as any).R2_ACCESS_KEY_ID && (env as any).R2_SECRET_ACCESS_KEY),
+      hasDb: Boolean((env as any).DATABASE_URL),
+    });
+  } catch (err) {
+    log("env", "FATAL: buildNodeEnv() failed", {
+      message: (err as Error).message,
+      stack: (err as Error).stack,
+    });
     process.exit(1);
+    return;
   }
 
+  // --- 3. Start the server -----------------------------------------------
   const port = Number(process.env.PORT ?? 10000);
-
-  process.stderr.write(`[api:boot] Starting Node server on port ${port}\n`);
-  process.stderr.write(`[api:boot] RUNTIME = ${env.RUNTIME}\n`);
-  process.stderr.write(`[api:boot] ENVIRONMENT = ${env.ENVIRONMENT}\n`);
-  process.stderr.write(`[api:boot] Upstash configured: ${Boolean(env.UPSTASH_REDIS_REST_URL)}\n`);
-  process.stderr.write(`[api:boot] R2 configured: ${Boolean(env.R2_ACCESS_KEY_ID && env.R2_SECRET_ACCESS_KEY)}\n`);
+  log("serve", `preparing to bind 0.0.0.0:${port}`);
 
   // Wrap Hono's fetch to inject the env as the second argument. Hono's
   // `app.fetch(request, env, ctx)` signature matches the Workers API, so
   // this is a thin passthrough.
-  const nodeFetch = (request: Request): Promise<Response> => app.fetch(request, env);
+  const nodeFetch = (request: Request): Promise<Response> => app.fetch(request, env as any);
 
   try {
-    process.stderr.write(`[api:boot] calling serve() on 0.0.0.0:${port}\n`);
-    serve(
+    serveFn(
       {
         fetch: nodeFetch,
         port,
         hostname: "0.0.0.0",
       },
-      (info: { address: string; port: number }) => {
-        process.stderr.write(`[api:boot] Listening on http://${info.address}:${info.port}\n`);
-        process.stderr.write(`[api:boot] SERVER IS LIVE\n`);
-      }
+      (info) => {
+        log("serve", `LISTENING on http://${info.address}:${info.port} — SERVER IS LIVE`);
+      },
     );
-    process.stderr.write(`[api:boot] serve() returned (server is async)\n`);
-  } catch (serveErr) {
-    process.stderr.write(`[api:boot] FATAL serve() error: ${serveErr instanceof Error ? serveErr.stack : String(serveErr)}\n`);
+    log("serve", "serve() returned synchronously (server is async)");
+  } catch (err) {
+    log("serve", "FATAL: serve() threw synchronously", {
+      message: (err as Error).message,
+      stack: (err as Error).stack,
+    });
     process.exit(1);
+    return;
   }
 
-  // Graceful shutdown for Render's zero-downtime deploys
+  // --- 4. Graceful shutdown ----------------------------------------------
   const shutdown = (signal: string) => {
-    process.stderr.write(`[api:boot] ${signal} received, shutting down gracefully\n`);
+    log("shutdown", `${signal} received, exiting gracefully`);
     process.exit(0);
   };
   process.on("SIGTERM", () => shutdown("SIGTERM"));
   process.on("SIGINT", () => shutdown("SIGINT"));
+
+  log("main", "main() finished — server handed off to @hono/node-server");
 }
 
-process.stderr.write("[api:boot] calling main()\n");
+// ============================================================================
+// ENTRY POINT — fire main(). All errors funnel through the crash shield
+// installed at the top of the file.
+// ============================================================================
+
+log("entry", "calling main()");
 main().catch((topErr) => {
-  process.stderr.write(`[api:boot] UNHANDLED main() error: ${topErr instanceof Error ? topErr.stack : String(topErr)}\n`);
+  log("entry", "UNHANDLED main() rejection", {
+    message: (topErr as Error).message,
+    stack: (topErr as Error).stack,
+  });
   process.exit(1);
 });
+
+log("entry", "node-server.ts: file fully evaluated (main() in flight)");
